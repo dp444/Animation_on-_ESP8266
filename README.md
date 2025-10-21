@@ -1,106 +1,72 @@
-This project provides a complete Python-based workflow for converting an animated GIF into an Arduino sketch, optimized for display on an SSD1306 128x64 OLED using the Adafruit GFX and SSD1306 libraries.
+🧠 Automatic ESP8266 OLED Animation Builder
 
-The workflow automates the typically manual and tedious process of frame extraction, image conversion to C-style byte arrays, and Arduino code generation.
+Convert any animated GIF into a complete Arduino sketch for SSD1306 128x64 OLED displays — automatically!
+This Python-based workflow handles frame extraction, image conversion, and Arduino code generation using the Adafruit GFX and SSD1306 libraries.
+Refer to sites belowto learn interfacing of esp8266,oled display and manually creating animations before diving into this.
+https://randomnerdtutorials.com/esp8266-0-96-inch-oled-display-with-arduino-ide/
+https://www.instructables.com/Running-Animations-on-OLED-DISPLAY-SSD1306/
 
-## Workflow Overview
+🚀 Features
 
-The entire process is orchestrated by three Python scripts:
+🎞️ GIF Frame Splitting: Extracts and composites frames from optimized GIFs.
 
-1.  **`image_splitter.py`**: Extracts individual frames from an animated GIF, handling GIF optimization techniques to ensure each frame is correctly composited.
-2.  **`frame_generator.py`**: Converts the extracted image frames (e.g., `.gif` files) into 1-bit monochrome C-style byte array header files (`.h`), suitable for embedding in Arduino sketches.
-3.  **`build_animation_ino.py`**: Takes the generated `.h` files and a user-defined Arduino template sketch (`.ino`), then automatically constructs the final Arduino sketch, injecting all frame data (marked with `PROGMEM`) and generating the `loop()` display logic.
+🧩 Image → C Array: Converts frames into 1-bit monochrome byte arrays.
 
-## Features
+⚙️ Auto Arduino Sketch Builder:
 
-* **GIF Frame Splitting:** Correctly extracts and composites frames from optimized GIFs.
-* **Image to C Array Conversion:** Converts image frames to 1-bit monochrome byte arrays.
-* **Automatic Arduino Sketch Generation:**
-    * **`PROGMEM` Integration:** All frame data is automatically placed in program memory, conserving precious RAM on your microcontroller.
-    * **Dynamic Loop Generation:** The `loop()` function is automatically populated with `display.drawBitmap()` calls for each frame.
-    * **Template-Based Structure:** Allows for easy customization of the base Arduino sketch.
-    * **Intelligent Naming:** Maps sequential frame files (e.g., `frame_000.h`) to appropriately named Arduino variables (e.g., `Frame1`, `Frame2`).
+Stores frames in PROGMEM (program memory).
 
-## Prerequisites
+Generates dynamic display loops using display.drawBitmap().
 
-1.  **Python 3:** Required to run all build scripts.
-    * Install the Pillow library: `pip install Pillow`
-2.  **Arduino IDE:** For compiling and uploading the final sketch to your microcontroller.
-3.  **Arduino Libraries:** Install these via the Arduino IDE's Library Manager:
-    * `Adafruit_GFX`
-    * `Adafruit_SSD1306`
+Supports template-based customization.
 
-## Step-by-Step Guide
+📁 Project Structure
+Animation_on_ESP8266/
+├── input_videos/                             # Your source GIF(rename your GIF file to test.gif)
+├── input_images/                             # (Generated) Extracted frames
+├── output_headers/                           # (Generated) .h files for frames
+├── Template/animation.ino                    # Template Arduino sketch
+├── animation_updated/animation_updated.ino   # (Generated) Final Arduino sketch
+├── image_splitter.py                         # Extracts GIF frames
+├── frame_generator.py                        # Converts frames to .h files
+└── code_generator.py                         # Builds final Arduino sketch
 
-Follow these steps sequentially to convert your animated GIF into an Arduino animation sketch.
+⚙️ Prerequisites
 
-### Step 1: Prepare Your Arduino Template Sketch
+Python 3
 
-Create or modify the `templet/animation.ino` file. It **must** contain the following placeholders for the `build_animation_ino.py` script to inject code:
+Pillow → pip install Pillow
 
-* `// __FRAME_DEFINITIONS__`
-* `// __FRAME_LOOP__`
+Arduino IDE
 
-Refer to the `templet/animation.ino` file in this repository for the required structure.
+Arduino Libraries:
 
-### Step 2: Split GIF into Individual Frames
+Adafruit_GFX
 
-Place your animated GIF (e.g., `your_animation.gif`) into the `input_videos/` folder.
+Adafruit_SSD1306
 
-Then, run the `image_splitter.py` script from your project's root directory:
+🧭 Step-by-Step Guide
 
-```bash
+
+2️⃣ Split GIF
+
+Place your .gif in input_videos/ and run:
+
 python3 image_splitter.py
-This script will:
 
-Create the input_images/ folder if it doesn't exist.
+3️⃣ Convert Frames
 
-Extract each frame from your GIF and save it as frame_000.gif, frame_001.gif, etc., into input_images/.
-
-Handle GIF optimization and disposal methods to ensure correct frame compositing.
-
-Refer to image_splitter.py for its full code and configuration options.
-
-Step 3: Convert Image Frames to C Header Files
-Next, run the frame_generator.py script:
-
-Bash
+Generate 1-bit C header files:
 
 python3 frame_generator.py
-This script will:
 
-Read all .gif files from input_images/.
+4️⃣ Build Final Sketch
 
-Create the output_headers/ folder if it doesn't exist.
+Assemble everything into one .ino:
 
-Convert each image frame into a 1-bit monochrome C-style byte array.
+python3 code_generator.py
 
-Save these arrays as header files (e.g., frame_000.h, frame_001.h) into output_headers/.
+5️⃣ Upload to ESP8266
 
-Refer to frame_generator.py for its full code and configuration options (e.g., TARGET_WIDTH, TARGET_HEIGHT, INVERT_PIXELS).
-
-Step 4: Build the Final Arduino Sketch
-Finally, run the build_animation_ino.py script:
-
-Bash
-
-python3 build_animation_ino.py
-This script will:
-
-Read the generated .h files from output_headers/.
-
-Read your template from templet/animation.ino.
-
-Create the animation_updated/ folder if it doesn't exist.
-
-Generate the complete Arduino sketch as animation_updated/animation_updated.ino, with all frame definitions (using PROGMEM) and the display loop.
-
-Refer to build_animation_ino.py for its full code and configuration options.
-
-Step 5: Compile and Upload to Arduino
-Open the newly generated animation_updated/animation_updated.ino file in your Arduino IDE.
-
-Select your specific Arduino board and the correct COM port from the Tools menu.
-
-Click the Upload button in the Arduino IDE to compile the sketch and flash it to your microcontroller.
-
-Your SSD1306 OLED display should now spring to life with your custom animation!
+Open animation_updated/animation_updated.ino in Arduino IDE,
+select your board and port, then upload — your OLED will animate!
