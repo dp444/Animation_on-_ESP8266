@@ -1,6 +1,6 @@
 # 🧠 Automatic ESP8266 OLED Animation Builder
 
-![alt text] Images/IMG1.jpeg
+![alt text] [Images/IMG1.jpeg](https://github.com/dp444/Animation_on-_ESP8266/blob/main/Images/IMG1.jpeg)
 
 - Convert any animated GIF into a complete Arduino sketch for SSD1306 128x64 OLED displays — automatically!
 - This Python-based workflow handles frame extraction, image conversion, and Arduino code generation using the Adafruit GFX and SSD1306 libraries.
