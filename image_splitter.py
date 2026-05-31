@@ -80,7 +80,7 @@ def split_gif_frames(gif_path, output_folder):
                 last_disposal_method = disposal_method # Update for the next iteration
 
 
-        print(f"Successfully extracted and composited {frame_index} frames to {output_folder} as GIF files")
+            print(f"Successfully extracted and composited {frame_index} frames to {output_folder} as GIF files")
 
     except FileNotFoundError:
         print(f"Error: GIF file not found at {gif_path}")
@@ -89,33 +89,28 @@ def split_gif_frames(gif_path, output_folder):
 
 # --- Example Usage ---
 if __name__ == "__main__":
-    output_directory = "input_images" # Unified output folder name
+    import sys
+    output_directory = "input_images" 
 
-    # --- GIF Example ---
-    gif_file = "input_videos/test.gif"  # Replace with your GIF file path
+    # 1. Get the GIF path from the GUI if provided
+    if len(sys.argv) > 1:
+        gif_file = sys.argv[1]
+    else:
+        # Fallback if you run it manually without the GUI
+        gif_file = "input_videos/test.gif" 
 
-    # Create a dummy GIF if it doesn't exist for testing
+    # 2. Safety check
     if not os.path.exists(gif_file):
-        print(f"\nNote: Creating a dummy optimized GIF '{gif_file}' for demonstration.")
-        # Frame 1: Red background
-        frame1 = Image.new('RGB', (60, 40), color = 'red')
-        # Frame 2: Blue rectangle overlaying part of Frame 1
-        frame2_overlay = Image.new('RGB', (30, 20), color = 'blue')
-        frame2 = frame1.copy()
-        frame2.paste(frame2_overlay, (15, 10)) # Paste blue box in the middle
-        # Frame 3: Green circle overlaying part of Frame 2
-        frame3_overlay = Image.new('RGBA', (20, 20), color=(0,0,0,0)) # Transparent circle base
-        draw = ImageDraw.Draw(frame3_overlay)
-        draw.ellipse((0, 0, 19, 19), fill='green')
-        frame3 = frame2.copy()
-        frame3.paste(frame3_overlay, (35, 15), frame3_overlay) # Paste green circle offset
+        print(f"Error: Could not find the file '{gif_file}'")
+        sys.exit(1)
 
-        # Save as an optimized GIF (Pillow might not optimize aggressively, but demonstrates structure)
-        frame1.save(gif_file, save_all=True, append_images=[frame2, frame3], duration=200, loop=0, optimize=True, disposal=2) # Use disposal=2
-        print(f"Dummy optimized GIF '{gif_file}' created.")
-
-
-    print("\n--- Processing GIF ---")
-    split_gif_frames(gif_file, output_directory) # Use unified output directory
-
-    print("\n--- Video processing skipped as only GIF input is used. ---")
+    print(f"\n--- Processing GIF: {gif_file} ---")
+    
+    # 3. Clear out old frames from the input_images folder before splitting a new GIF
+    if os.path.exists(output_directory):
+        for file in os.listdir(output_directory):
+            if file.endswith(".gif"):
+                os.remove(os.path.join(output_directory, file))
+                
+    # 4. Run the split
+    split_gif_frames(gif_file, output_directory)
