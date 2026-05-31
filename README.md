@@ -3,7 +3,7 @@
 ![Images/IMG1.jpeg](https://raw.githubusercontent.com/dp444/Animation_on-_ESP8266/main/Images/IMG1.jpeg)
 
 ### 🖥️ New Modern Desktop GUI
-![Images/IMG2.jpeg](https://raw.githubusercontent.com/dp444/Animation_on-_ESP8266/main/Images/IMG2.jpeg)
+![Images/IMG2.jpeg](https://raw.githubusercontent.com/dp444/Animation_on-_ESP8266/main/Images/IMG2.png)
 
 - Convert any animated GIF into a complete Arduino sketch for SSD1306 128x64 OLED displays — automatically!
 - This Python-based workflow handles frame extraction, image conversion, and Arduino code generation using the Adafruit GFX and SSD1306 libraries. It now features a modern desktop GUI to manage the entire pipeline with a single click.
