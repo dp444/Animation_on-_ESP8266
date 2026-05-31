@@ -5,15 +5,7 @@ import sys
 def convert_image_to_c_array_mono(image_path, output_folder, target_width, target_height, invert=False):
     """
     Converts a single image file into a C-style 1-bit monochrome byte array.
-    
-    Args:
-        image_path (str): Path to the input image file.
-        output_folder (str): Directory where the .h file will be saved.
-        target_width (int): Desired width to resize the image to.
-        target_height (int): Desired height to resize the image to.
-        invert (bool): If True, inverts pixels (white becomes black, black becomes white).
     """
-    
     try:
         img = Image.open(image_path)
     except IOError:
@@ -76,12 +68,12 @@ def convert_image_to_c_array_mono(image_path, output_folder, target_width, targe
     except IOError:
         print(f"  Error: Cannot write to output file {output_filename}. Skipping.")
 
+
 def batch_convert_images_to_c_array(input_folder, output_folder, target_width, target_height, invert=False):
     """
     Processes all image files in an input folder, converting them to C-style
     monochrome byte arrays and saving them to an output folder.
     """
-    
     if not os.path.exists(input_folder):
         print(f"Error: Input folder '{input_folder}' does not exist.")
         return
@@ -98,7 +90,7 @@ def batch_convert_images_to_c_array(input_folder, output_folder, target_width, t
     processed_count = 0
     supported_extensions = ('.png', '.jpg', '.jpeg', '.bmp', '.gif') # Add more if needed
 
-    for filename in os.listdir(input_folder):
+    for filename in sorted(os.listdir(input_folder)): # Sorted to keep frames in order
         if filename.lower().endswith(supported_extensions):
             image_path = os.path.join(input_folder, filename)
             print(f"Processing: {filename}")
@@ -113,22 +105,24 @@ def batch_convert_images_to_c_array(input_folder, output_folder, target_width, t
     else:
         print(f"Batch conversion complete. Processed {processed_count} image(s).")
 
-# --- --- --- --- --- --- --- --- --- ---
-# --- HOW TO USE ---
-# --- --- --- --- --- --- --- --- --- ---
-if __name__ == "__main__":
-    
-    # --- CONFIGURE YOUR BATCH CONVERSION ---
-    
-    INPUT_IMAGE_FOLDER = "input_images"   # <--- Create this folder and put your images here
-    OUTPUT_C_HEADER_FOLDER = "output_headers" # <--- This folder will be created for the .h files
 
-    TARGET_WIDTH = 128
-    TARGET_HEIGHT = 64
-    
-    # Set to True if your display expects 0 for 'on' pixels and 1 for 'off' pixels.
-    # Standard is False (1 for 'on', 0 for 'off').
-    INVERT_PIXELS = False 
+# --- HOW TO USE ---
+if __name__ == "__main__":
+    INPUT_IMAGE_FOLDER = "input_images"
+    OUTPUT_C_HEADER_FOLDER = "output_headers"
+
+    # --- THE FIX: Listen to the GUI variables instead of hardcoding ---
+    if len(sys.argv) > 1:
+        TARGET_WIDTH = int(sys.argv[1])
+        TARGET_HEIGHT = int(sys.argv[2])
+        # Safely convert the string passed by Tkinter into a real boolean
+        invert_arg = str(sys.argv[3]).lower()
+        INVERT_PIXELS = (invert_arg == 'true' or invert_arg == '1')
+    else:
+        # Fallback values if you ever run it manually without the GUI
+        TARGET_WIDTH = 128
+        TARGET_HEIGHT = 64
+        INVERT_PIXELS = False 
 
     # Run the batch conversion
     batch_convert_images_to_c_array(
